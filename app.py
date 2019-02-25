@@ -28,16 +28,16 @@ class Product(db.Model):
     self.email = email
     
 
-# Product Schema
+
 class ProductSchema(ma.Schema):
   class Meta:
     fields = ('id', 'name', 'password', 'email')
 
-# Init schema
+
 product_schema = ProductSchema(strict=True)
 products_schema = ProductSchema(many=True, strict=True)
 
-# Create a Product
+# Create a new user
 @app.route('/product', methods=['POST'])
 def add_product():
   name = request.json['name']
@@ -51,7 +51,7 @@ def add_product():
   db.session.commit()
 
 
-  return product_schema.jsonify(new_product)
+  return product_schema.jsonify(new_person)
 
  
      
