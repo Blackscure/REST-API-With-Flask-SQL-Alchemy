@@ -1,59 +1,59 @@
 from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+from flask_sqlalchemy import SQLAlchemy 
+from flask_marshmallow import Marshmallow 
 import os
 
-app = Flask('__main__')
+# Init app
+app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
-
+# Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+# Init db
 db = SQLAlchemy(app)
- 
+# Init ma
 ma = Marshmallow(app)
 
-class Product():
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100),unique=True)
-    description = db.Column(db.String(200))
-    price = db.Column(db.Float)
-    qty = db.Column(db.Integer)
+# Product Class/Model
+class Product(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(100), unique=True)
+  password = db.Column(db.String(200))
+  email = db.Column(db.String(200))
+  
 
-    def __init__(self, name, description,price,qty):
-        self.name = name
-        self.description = description
-        self. price = price
-        self.qty = qty 
+  def __init__(self, name, password, email):
+    self.name = name
+    self.password = password
+    self.email = email
+    
 
-class  ProductSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name','description', 'price','qty')
+# Product Schema
+class ProductSchema(ma.Schema):
+  class Meta:
+    fields = ('id', 'name', 'password', 'email')
 
-
+# Init schema
 product_schema = ProductSchema(strict=True)
 products_schema = ProductSchema(many=True, strict=True)
 
+# Create a Product
 @app.route('/product', methods=['POST'])
 def add_product():
-    name = request.json['name']
-    description = request.json['description' ]
-    price = request.json['price']
-    qty = request.json['qty']
+  name = request.json['name']
+  password = request.json['password']
+  email = request.json['email']
+  
 
-    new_product = Product(name,description,price,qty)
+  new_person = Product(name, password, email)
 
-    db.session.add(new_product)
-    db.session.commit()
-
-    return product_schema.jsonify(new_product)
+  db.session.add(new_person)
+  db.session.commit()
 
 
-#@app.route('/product', methods=['GET'])
-#def get_products():
-    #all_products = Product.query.all()
-    #result = products_schema.dump(all_products)
-    #return jsonify(result.data)
+  return product_schema.jsonify(new_product)
+
+ 
      
 
 
